@@ -1,7 +1,5 @@
 package pet_clinic.ui;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,10 +10,9 @@ import pet_clinic.ownerGenerator.OwnerDataGenerator;
 import pet_clinic.pageObject.FindOwnersPage;
 import pet_clinic.pageObject.HomePage;
 import pet_clinic.pageObject.NewOwnerPage;
+import pet_clinic.pageObject.OwnerInformationPage;
 import pet_clinic.utils.WebDriverCreators;
 import pet_clinic.utils.WebDriverProvider;
-
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,7 +21,9 @@ public class CreatingNewOwnerTest {
 
     private HomePage homePage;
     private FindOwnersPage findOwnersPage;
+    private OwnerInformationPage ownerInformationPage;
     private static NewOwnerPage newOwnerPage;
+
     private static OwnerDataGenerator ownerDataGenerator = new OwnerDataGenerator();
 
     @BeforeEach
@@ -35,12 +34,13 @@ public class CreatingNewOwnerTest {
         homePage = new HomePage(driver);
         findOwnersPage = new FindOwnersPage(driver);
         newOwnerPage = new NewOwnerPage(driver);
+        ownerInformationPage = new OwnerInformationPage(driver);
         driver.get("http://localhost:8080/");
     }
-//    @AfterEach
-//    public void tearDown() {
-//        driver.close();
-//    }
+    @AfterEach
+    public void tearDown() {
+        driver.close();
+    }
 
     @ParameterizedTest
     @MethodSource
@@ -48,9 +48,24 @@ public class CreatingNewOwnerTest {
         homePage.clickfindOwnersButton();
         findOwnersPage.clickAddOwnerButton();
         newOwnerPage.fillingNewOwnerFields(owner);
+        assertThat(owner.get("first_name") + " " + owner.get("last_name")).isEqualTo(ownerInformationPage.returnFullName());
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void findOwner(JSONObject owner) {
+        creatingNewOwner(owner);
+        ownerInformationPage.clickFindOwnerButton();
+        findOwnersPage.fillingLastNameFieldAndClickingFindOwnerButton(owner);
+        assertThat(owner.get("first_name") + " " + owner.get("last_name")).isEqualTo(ownerInformationPage.returnFullName());
     }
 
     static JSONObject[][] creatingNewOwner() {
+        return new JSONObject[][] {
+                new JSONObject[] { ownerDataGenerator.randomDataFromJson() },
+        };
+    }
+    static JSONObject[][] findOwner() {
         return new JSONObject[][] {
                 new JSONObject[] { ownerDataGenerator.randomDataFromJson() },
         };

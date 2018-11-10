@@ -1,19 +1,11 @@
 package pet_clinic.pageObject;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import pet_clinic.utils.Waits;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Random;
 
 public class NewOwnerPage {
     @FindBy(id = "firstName")
@@ -45,6 +37,7 @@ public class NewOwnerPage {
     }
 
     public void fillingNewOwnerFields(JSONObject owner) {
+        waits.waitForElementToBeVisible(firstNameField);
         firstNameField.sendKeys((String) owner.get("first_name"));
         lastNameField.sendKeys((String) owner.get("last_name"));
         addressField.sendKeys((String) owner.get("address"));
